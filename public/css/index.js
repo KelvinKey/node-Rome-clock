@@ -131,12 +131,6 @@ function initStyle() {
     for (var i = 0; i < label.length; i++) {
         label[i].style.color = '#4d4d4d';
     }
-    // 利用二维数组存放dom元素的数组
-    // for (var i = 0 ; i < textSet.length ; i ++) {
-    //     for (var j = 0 ; j < textSet[i][0].length ; j ++) {
-    //         textSet[i][1][j].style.color = "#4d4d4d";
-    //     }
-    // }
 }
 
 // 修改position
@@ -160,6 +154,4 @@ function changePosition() {
 function changeCircle() {
     isCircle = true;
     clock.style.transform = "rotate(90deg)";
-
-
 }
