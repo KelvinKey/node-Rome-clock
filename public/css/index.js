@@ -46,7 +46,6 @@ window.onload = function() {
             runTime();
         }, 100);
 
-        // 在变成圆形之前先进性修改定位
         changePosition();
         // 延迟2000ms变成圆形
         setTimeout(function() {
@@ -90,8 +89,6 @@ function runTime() {
     // 初始化时间颜色 同时将走过时间设置为灰色
     initStyle();
 
-    // 设置当前时间为白色
-    // 将当前时间月份存放在数组中
     var nowValue = [month, day - 1, week, hour, minute, seconds];
     for (var i = 0; i < nowValue.length; i++) {
         var num = nowValue[i];
