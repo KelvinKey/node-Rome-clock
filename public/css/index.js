@@ -1,3 +1,5 @@
+'use strict'
+
 const monthText = ['壹月', '贰月', '叁月', '肆月', '伍月', '陆月', '柒月', '捌月', '玖月', '拾月', "拾壹月", "拾贰月"];
 const dayText = ["一号", "二号", "三号", "四号", "五号", "六号", "七号", "八号", "九号", "十号", "十一号", "十二号", "十三号", "十四号", "十五号", "十六号", "十七号", "十八号", "十九号", "二十号", "二十一号", "二十二号", "二十三号", "二十四号", "二十五号", "二十六号", "二十七号", "二十八号", "二十九号", "三十号", "三十一号"];
 const weekText = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
@@ -29,126 +31,121 @@ const secondsList = [];
 // 当前展示是否为圆形
 const isCircle = false;
 
-//二维数组 存放文字内容及页面显示标签 
-const textSet = [
-    [monthText, monthList],
-    [dayText, dayList],
-    [weekText, weekList],
-    [hourText, hourList],
-    [minuteText, minuteList],
-    [secondsText, secondsList]
-];
 
-window.onload = function() {
-        init();
-        // 每隔100ms获得 当前时间 更新页面时间显示
-        setInterval(function() {
-            runTime();
-        }, 100);
-
-        changePosition();
-        // 延迟2000ms变成圆形
-        setTimeout(function() {
-            changeCircle();
-        }, 2000);
-    }
-    // 初始化函数
-function init() {
-    clock = document.getElementById('clock');
-    // 生成标签 存放文字展示
-    for (var i = 0; i < textSet.length; i++) {
-        for (var j = 0; j < textSet[i][0].length; j++) {
-            var temp = createLabel(textSet[i][0][j]);
-            clock.appendChild(temp);
-            // 将生成的标签存放在数组list中
-            textSet[i][1].push(temp);
-        }
-    }
-
-}
-
-// 创建标签并将文字填充标签内 接收参数为文字内容  
-function createLabel(text) {
-    var div = document.createElement('div');
-    div.classList.add('label');
-    div.innerText = text;
-    return div;
-}
-
-function runTime() {
-    // 利用时间对象获得 当前 时间
-    var now = new Date();
-    // 获得月 日期 小时 分钟 秒钟
-    var month = now.getMonth();
-    var day = now.getDate();
-    var week = now.getDay();
-    var hour = now.getHours();
-    var minute = now.getMinutes();
-    var seconds = now.getSeconds();
-
-    // 初始化时间颜色 同时将走过时间设置为灰色
-    initStyle();
-
-    var nowValue = [month, day - 1, week, hour, minute, seconds];
-    for (var i = 0; i < nowValue.length; i++) {
-        var num = nowValue[i];
-        textSet[i][1][num].style.color = '#fff';
-    }
-
-    // 变成圆形
-    if (isCircle) {
-        // 确定圆心
-        var widthMid = document.body.clientWidth / 2;
-        var heightMid = document.body.clientHeight / 2;
-        // 将每一个dom元素确定到圆的位置
-        for (var i = 0; i < textSet.length; i++) {
-            for (var j = 0; j < textSet[i][0].length; j++) {
-                // 加算出每一个元素的位置  x y 坐标
-                // 每一个圆的半径与时分秒的位置有关
-                var r = (i + 1) * 35 + 50 * i;
-                // 计算每一个平均的角度  再将每一个单位对齐 然后转化成弧度
-                var deg = 360 / textSet[i][1].length * (j - nowValue[i]);
-                // 计算出每一个dom元素的坐标
-                var x = r * Math.sin(deg * Math.PI / 180) + widthMid;
-                var y = heightMid - r * Math.cos(deg * Math.PI / 180);
-                // 设置样式
-                var temp = textSet[i][1][j];
-                temp.style.transform = 'rotate(' + (-90 + deg) + 'deg)';
-                temp.style.left = x + 'px';
-                temp.style.top = y + 'px';
+const Api = {
+    textSet: [
+        [monthText, monthList],
+        [dayText, dayList],
+        [weekText, weekList],
+        [hourText, hourList],
+        [minuteText, minuteList],
+        [secondsText, secondsList]
+    ],
+    init: () => {
+        clock = document.getElementById('clock');
+        // 生成标签 存放文字展示
+        for (var i = 0; i < Api.textSet.length; i++) {
+            for (var j = 0; j < Api.textSet[i][0].length; j++) {
+                var temp = createLabel(Api.textSet[i][0][j]);
+                clock.appendChild(temp);
+                // 将生成的标签存放在数组list中
+                Api.textSet[i][1].push(temp);
             }
         }
-    }
-}
+    },
+    /**创建标签并将文字填充标签内 接收参数为文字内容   */
+    createLabel: (text) => {
+        var div = document.createElement('div');
+        div.classList.add('label');
+        div.innerText = text;
+        return div;
+    },
+    runTime: () => {
+        // 利用时间对象获得 当前 时间
+        var now = new Date();
+        // 获得月 日期 小时 分钟 秒钟
+        var month = now.getMonth();
+        var day = now.getDate();
+        var week = now.getDay();
+        var hour = now.getHours();
+        var minute = now.getMinutes();
+        var seconds = now.getSeconds();
 
-function initStyle() {
-    // 将所有标签置为灰色 
-    // 利用取出dom元素
-    var label = document.getElementsByClassName('label');
-    for (var i = 0; i < label.length; i++) {
-        label[i].style.color = '#4d4d4d';
-    }
-}
+        // 初始化时间颜色 同时将走过时间设置为灰色
+        initStyle();
 
-// 修改position
-function changePosition() {
-    for (let i = 0; i < textSet.length; i++) {
-        for (let j = 0; j < textSet[i][1].length; j++) {
-            // 先获得原来的位置  再修改position 设置left top 
-            let tempX = textSet[i][1][j].offsetLeft + "px";
-            let tempY = textSet[i][1][j].offsetTop + "px";
-            // console.log(textSet[i][1][j]);
-            // 利用let 防止闭包
-            setTimeout(function() {
-                textSet[i][1][j].style.position = "absolute";
-                textSet[i][1][j].style.left = tempX;
-                textSet[i][1][j].style.top = tempY;
-            }, 50);
+        var nowValue = [month, day - 1, week, hour, minute, seconds];
+        for (var i = 0; i < nowValue.length; i++) {
+            var num = nowValue[i];
+            textSet[i][1][num].style.color = '#fff';
         }
+
+        // 变成圆形
+        if (isCircle) {
+            // 确定圆心
+            var widthMid = document.body.clientWidth / 2;
+            var heightMid = document.body.clientHeight / 2;
+            // 将每一个dom元素确定到圆的位置
+            for (var i = 0; i < textSet.length; i++) {
+                for (var j = 0; j < textSet[i][0].length; j++) {
+                    // 加算出每一个元素的位置  x y 坐标
+                    // 每一个圆的半径与时分秒的位置有关
+                    var r = (i + 1) * 35 + 50 * i;
+                    // 计算每一个平均的角度  再将每一个单位对齐 然后转化成弧度
+                    var deg = 360 / textSet[i][1].length * (j - nowValue[i]);
+                    // 计算出每一个dom元素的坐标
+                    var x = r * Math.sin(deg * Math.PI / 180) + widthMid;
+                    var y = heightMid - r * Math.cos(deg * Math.PI / 180);
+                    // 设置样式
+                    var temp = textSet[i][1][j];
+                    temp.style.transform = 'rotate(' + (-90 + deg) + 'deg)';
+                    temp.style.left = x + 'px';
+                    temp.style.top = y + 'px';
+                }
+            }
+        }
+    },
+    initStyle: () => {
+        // 将所有标签置为灰色 
+        // 利用取出dom元素
+        var label = document.getElementsByClassName('label');
+        for (var i = 0; i < label.length; i++) {
+            label[i].style.color = '#4d4d4d';
+        }
+    },
+    changePosition: () => {
+        for (let i = 0; i < textSet.length; i++) {
+            for (let j = 0; j < textSet[i][1].length; j++) {
+                // 先获得原来的位置  再修改position 设置left top 
+                let tempX = textSet[i][1][j].offsetLeft + "px";
+                let tempY = textSet[i][1][j].offsetTop + "px";
+                // console.log(textSet[i][1][j]);
+                // 利用let 防止闭包
+                setTimeout(function() {
+                    textSet[i][1][j].style.position = "absolute";
+                    textSet[i][1][j].style.left = tempX;
+                    textSet[i][1][j].style.top = tempY;
+                }, 50);
+            }
+        }
+    },
+    changeCircle: () => {
+        isCircle = true;
+        clock.style.transform = "rotate(90deg)";
     }
+
 }
 
-function changeCircle() {
-    isCircle = true;
-    clock.style.transform = "rotate(90deg)";
+window.onload = function() {
+    init();
+    // 每隔100ms获得 当前时间 更新页面时间显示
+    setInterval(function() {
+        runTime();
+    }, 100);
+
+    changePosition();
+    // 延迟2000ms变成圆形
+    setTimeout(function() {
+        changeCircle();
+    }, 2000);
 }
